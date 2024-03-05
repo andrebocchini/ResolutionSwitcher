@@ -1,0 +1,20 @@
+name: Build and Upload Windows Artifact
+
+on:
+  push:
+    tags:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-windows@python3-10-pyinstaller-5-3
+      with:
+        path: src
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ResolutionSwitcher
+        path: src/dist/windows
