@@ -2,35 +2,44 @@
 
 A command line tool to change the display resolution of computers running Windows.
 
-## Usage
+## Usage Examples
+
+List all available devices on the system
 
 ```shell
-ResolutionSwitcher.exe --width 1920 --height 1080 --refresh 60
+ResolutionSwitcher
 ```
 
-You can provide the `width`, `height`, and `refresh` parameters at the same time, or provide them individually. 
-If you provide them individually, the tool will use the values for the currently active display settings to make sure it has
-all 3 to provide to Windows when it attempts to change the resolution.
-
-For example:
+Display all available resolutions for device with identifier `\\.\DISPLAY2`
 
 ```shell
-ResolutionSwitcher.exe --width 1920
-
-ResolutionSwitcher.exe --height 1080
-
-ResolutionSwitcher.exe --refresh 60
+ResolutionSwitcher --device \\.\DISPLAY2
 ```
 
-If you run the tool without providing any parameters, it will print the current display settings, as
-well as full dump of all available display settings for all displays on the system.
+Change the resolution of the primary display device
 
-## Example Usage: Sunshine "Do" and and "Undo" Commands
+```shell
+ResolutionSwitcher --width 1920 --height 1080 --refresh 60
+```
+
+Change the resolution of device with identifier `\\.\DISPLAY2`
+
+```shell
+ResolutionSwitcher --width 1920 --height 1080 --refresh 60 --device \\.\DISPLAY2
+```
+
+Display available help information
+
+```shell
+ResolutionSwitcher --help
+```
+
+## Sunshine "Do" and and "Undo" Commands
 
 The tool is useful for scenarios where you need to programmatically change the resolution of a display, for example, 
 during "do" and "undo" commands run as part of a [Moonlight](https://moonlight-stream.org/) session via [Sunshine](https://github.com/LizardByte/Sunshine).
 
-This assumes the application is installed at `C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe`.
+These examples assume the application is installed at `C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe`.
 
 ### Do Command
 
