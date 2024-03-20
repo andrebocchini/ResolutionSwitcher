@@ -1,206 +1,78 @@
 from sys import exit
 from argparse import ArgumentParser
-from termcolor import colored, cprint
-
-# Functions for getting display devices and settings
-from win32api import EnumDisplayDevices
-from win32api import EnumDisplaySettings
-from win32api import ChangeDisplaySettingsEx
-
-# Display device state flags
-from win32con import DISPLAY_DEVICE_ATTACHED_TO_DESKTOP
-from win32con import DISPLAY_DEVICE_PRIMARY_DEVICE
-
-# Display settings constants
-from win32con import ENUM_CURRENT_SETTINGS
-
-# Display mode fields
-from win32con import DM_PELSWIDTH
-from win32con import DM_PELSHEIGHT
-from win32con import DM_DISPLAYFREQUENCY
-
-# Resolution change results
-from win32con import DISP_CHANGE_SUCCESSFUL
-from win32con import DISP_CHANGE_RESTART
-from win32con import DISP_CHANGE_BADFLAGS
-from win32con import DISP_CHANGE_BADMODE
-from win32con import DISP_CHANGE_BADPARAM
-from win32con import DISP_CHANGE_FAILED
-from win32con import DISP_CHANGE_NOTUPDATED
-from win32con import DISP_CHANGE_BADDUALVIEW
-
-from pywintypes import DEVMODEWType
+from termcolor import (
+    colored,
+    cprint
+)
+from display_adapters import (
+    DisplayMode,
+    set_display_mode_for_device
+)
+from custom_types import DisplayAdapterException, PrimaryMonitorException, HdrException
+from display_monitors import (
+    get_all_display_monitors,
+    DisplayMonitor,
+    set_hdr_state_for_monitor,
+    get_primary_monitor
+)
 
 # Application metadata
-VERSION: str = "v2.0.1"
+VERSION: str = "v3.0.0"
 NAME: str = "ResolutionSwitcher"
 
-# Terminal colors
-TERM_COLOR_SUCCESS = 'green'
-TERM_COLOR_ERROR = 'red'
-TERM_COLOR_HEADER = 'blue'
-TERM_COLOR_MESSAGE = None
+
+def print_all_available_modes_for_monitor(monitor: DisplayMonitor):
+    number_of_columns: int = 3
+
+    print_message("[Available Modes]\n", 'blue', attrs=['bold'])
+
+    for i in range(0, len(monitor.adapter.available_modes)):
+        print_message(f"{monitor.adapter.available_modes[i]}".ljust(25), end='')
+
+        if (i + 1) % number_of_columns == 0:
+            print_message("")
 
 
-class DisplayDevice:
-    def __init__(self, device: DEVMODEWType):
-        self.identifier: str = device.DeviceName
-        self.display_name: str = device.DeviceString
-        self.active_mode: DisplayMode = get_active_display_mode_for_device(device.DeviceName)
-        self.available_modes: list[DisplayMode] = get_all_available_modes_for_device(device.DeviceName)
-        self.is_attached: bool = is_attached_device(device.StateFlags)
-        self.is_primary: bool = is_primary_device(device.StateFlags)
+def print_monitor_info(monitor: DisplayMonitor):
+    justification: int = 16
 
-    def __str__(self):
-        return self.identifier
+    print_message(f"[{monitor.name}]\n", 'blue', attrs=['bold'])
+    print_message(f"ID:".ljust(justification) + f"{monitor.identifier()}")
+    print_message(f"Adapter:".ljust(justification) + f"{monitor.adapter.display_name}")
+    print_message(f"Resolution:".ljust(justification) + f"{monitor.active_mode()}")
+    print_message(f"Primary:".ljust(justification) + f"{monitor.is_primary()}")
+    print_message(f"Attached:".ljust(justification) + f"{monitor.is_attached()}")
 
+    hdr_supported = monitor.is_hdr_supported()
 
-class DisplayMode:
-    def __init__(self, width: int, height: int, refresh: int):
-        self.width: int = width
-        self.height: int = height
-        self.refresh: int = refresh
+    print_message(f"HDR Supported:".ljust(justification) + f"{hdr_supported}")
 
-    def __str__(self):
-        return str(self.width) + "x" + str(self.height) + " @ " + str(self.refresh) + "Hz"
-
-    def as_devmodew_type(self) -> DEVMODEWType:
-        devmode = DEVMODEWType()
-        devmode.PelsWidth = self.width
-        devmode.PelsHeight = self.height
-        devmode.DisplayFrequency = self.refresh
-        devmode.Fields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY
-        return devmode
-
-
-def is_attached_device(state_flags: int) -> bool:
-    return state_flags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP == DISPLAY_DEVICE_ATTACHED_TO_DESKTOP
-
-
-def is_primary_device(state_flags: int) -> bool:
-    return state_flags & DISPLAY_DEVICE_PRIMARY_DEVICE == DISPLAY_DEVICE_PRIMARY_DEVICE
-
-
-def get_all_display_devices() -> list[DisplayDevice]:
-    devices: list[DisplayDevice] = []
-
-    index_of_current_device: int = 0
-    finished_searching_for_devices: bool = False
-
-    while not finished_searching_for_devices:
-        try:
-            display_adapter: DEVMODEWType = EnumDisplayDevices(None, index_of_current_device, 0)
-            device: DisplayDevice = DisplayDevice(display_adapter)
-
-            devices.append(device)
-        except:
-            finished_searching_for_devices = True
-        finally:
-            index_of_current_device += 1
-
-    return devices
-
-
-def get_active_display_mode_for_device(device_identifier: str) -> DisplayMode | None:
-    try:
-        display_mode = EnumDisplaySettings(device_identifier, ENUM_CURRENT_SETTINGS)
-
-        return DisplayMode(display_mode.PelsWidth, display_mode.PelsHeight, display_mode.DisplayFrequency)
-    except:
-        return None
-
-
-def get_all_available_modes_for_device(device_identifier: str) -> list[DisplayMode]:
-    modes: list[DisplayMode] = []
-
-    # Tell Windows to cache display mode information
-    EnumDisplaySettings(device_identifier, 0)
-
-    index_of_current_mode: int = 1
-    finished_getting_modes: bool = False
-
-    while not finished_getting_modes:
-        try:
-            display_mode: DEVMODEWType = EnumDisplaySettings(device_identifier, index_of_current_mode)
-            modes.append(
-                DisplayMode(display_mode.PelsWidth, display_mode.PelsHeight, display_mode.DisplayFrequency)
-            )
-            index_of_current_mode += 1
-        except:
-            finished_getting_modes = True
-
-    return modes
-
-
-def print_device_info(device: DisplayDevice, detailed: bool = False):
-    # Device details
-    print_message(f'\n[{device.display_name}]', TERM_COLOR_HEADER, attrs=['bold'])
-    print_message(f'Identifier: {device.identifier}')
-    print_message(f'Active Mode: {str(device.active_mode)}')
-    print_message(f'Primary: {str(device.is_primary)}')
-    print_message(f'Attached: {str(device.is_attached)}')
-
-    if not detailed:
-        return
-
-    print_message("\n[Available Modes]", TERM_COLOR_HEADER, attrs=['bold'])
-
-    for i in range(0, len(device.available_modes), 3):
-        try:
-            print_message(f"{device.available_modes[i]}".ljust(25), end='')
-            print_message(f"{device.available_modes[i + 1]}".ljust(25), end='')
-            print_message(f"{device.available_modes[i + 2]}".ljust(25))
-        except:
-            pass
-
-
-def set_device_mode(device_identifier: str, device_mode: DEVMODEWType) -> int:
-    if device_mode is None:
-        raise ValueError("Display settings cannot be empty")
-
-    return ChangeDisplaySettingsEx(device_identifier, device_mode, 0)
-
-
-def print_human_readable_mode_change_result(result: int):
-    if result == DISP_CHANGE_SUCCESSFUL:
-        print_success("Display settings changed successfully")
-    elif result == DISP_CHANGE_RESTART:
-        print_error("The computer must be restarted for the graphics mode to work")
-    elif result == DISP_CHANGE_BADFLAGS:
-        print_error("An invalid set of flags was passed in")
-    elif result == DISP_CHANGE_BADMODE:
-        print_error("The graphics mode is not supported")
-    elif result == DISP_CHANGE_BADPARAM:
-        print_error("An invalid parameter was passed in")
-    elif result == DISP_CHANGE_FAILED:
-        print_error("The display driver failed the specified graphics mode")
-    elif result == DISP_CHANGE_NOTUPDATED:
-        print_error("Unable to write settings to the registry")
-    elif result == DISP_CHANGE_BADDUALVIEW:
-        print_error("The settings change was unsuccessful because the system is DualView capable")
-    else:
-        print_error("An unknown error occurred")
+    if hdr_supported:
+        print_message(f"HDR Enabled:".ljust(justification) + f"{monitor.is_hdr_enabled()}")
 
 
 def argument_parser() -> ArgumentParser:
     p = ArgumentParser(
         prog=NAME,
         description='Command line tool to change Windows display settings',
-        usage=f'{NAME} --version | --devices | --device <identifier> | --width <width> --height <height> --refresh '
-              f'<refresh>'
+        usage=f'{NAME} --version | --monitors | --monitor <ID> | --width <width> --height <height> --refresh '
+              f'<refresh> | hdr <enable/disable>'
     )
 
     version_group = p.add_argument_group()
     version_group.add_argument('--version', action='version', version=VERSION)
 
-    devices_group = p.add_mutually_exclusive_group()
-    devices_group.add_argument('--devices', action='store_true', help='List all active display devices')
-    devices_group.add_argument('--device', type=str, help='List all available modes for a device')
+    monitor_group = p.add_mutually_exclusive_group()
+    monitor_group.add_argument('--monitors', action='store_true', help='List all active monitors')
+    monitor_group.add_argument('--monitor', type=str, help='List all available modes for a monitor')
 
     mode_change_group = p.add_argument_group()
     mode_change_group.add_argument('--width', type=int, help='The width of the new display mode')
     mode_change_group.add_argument('--height', type=int, help='The height of the new display mode')
     mode_change_group.add_argument('--refresh', type=int, help='The refresh rate of the new display mode')
+
+    hdr_group = p.add_argument_group()
+    hdr_group.add_argument('--hdr', type=str, help='Enable/Disable HDR on the monitor')
 
     return p
 
@@ -211,7 +83,7 @@ def print_message(message: str, color: str = None, attrs: list[str] = None, end:
 
 
 def print_success(message: str):
-    colored_message = colored(message, TERM_COLOR_SUCCESS)
+    colored_message = colored(message, 'green')
     cprint(colored_message)
 
 
@@ -223,10 +95,10 @@ if __name__ == '__main__':
     parser = argument_parser()
     args = parser.parse_args()
 
-    display_devices: list[DisplayDevice] = get_all_display_devices()
+    all_monitors: list[DisplayMonitor] = get_all_display_monitors()
 
-    if len(display_devices) is None:
-        print_error("No display devices found")
+    if len(all_monitors) == 0:
+        print_error("No monitors found")
         exit(-1)
 
     if args.width or args.height or args.refresh:
@@ -242,34 +114,80 @@ if __name__ == '__main__':
             print_error("Refresh rate is required")
             exit(-1)
 
-        new_mode: DisplayMode = DisplayMode(args.width, args.height, args.refresh)
-        new_mode_as_devmodew_type: DEVMODEWType = new_mode.as_devmodew_type()
+        try:
+            identifier: str = args.monitor
 
-        if args.device is not None:
-            new_mode_as_devmodew_type.DeviceName = args.device
+            if identifier is None:
+                print_message("Monitor ID not specified")
+                print_message("Will attempt to change settings for primary monitor")
+                identifier = get_primary_monitor(all_monitors).identifier()
 
-            print_message(f'Attempting to change {args.device} settings to: {str(new_mode)}')
-        else:
-            print_message(f'Attempting to change primary display settings to: {str(new_mode)}')
+            display_mode: DisplayMode = DisplayMode(args.width, args.height, args.refresh)
 
-        device_mode_change_result: int = set_device_mode(args.device, new_mode_as_devmodew_type)
-        print_human_readable_mode_change_result(device_mode_change_result)
+            print_message(f'Attempting to change {identifier} settings to {str(display_mode)}')
+            set_display_mode_for_device(display_mode, identifier)
+            print_success("Display settings changed successfully")
 
-        if device_mode_change_result != DISP_CHANGE_SUCCESSFUL:
-            exit(device_mode_change_result)
-    elif args.device is not None:
-        identifier: str = args.device
-        target_device: DisplayDevice | None = next(
-            (device for device in display_devices if device.identifier == identifier), None
-        )
-
-        if target_device is None:
-            print_error(f'Device {identifier} not found')
+        except DisplayAdapterException as e:
+            print_error(str(e))
             exit(-1)
 
-        print_device_info(target_device, detailed=True)
-    else:
-        print_message(f'Display devices found: {len(display_devices)}')
+        except PrimaryMonitorException as e:
+            print_error(str(e))
+            exit(-1)
 
-        for display_device in display_devices:
-            print_device_info(display_device)
+    elif args.hdr is not None:
+        try:
+            identifier: str = args.monitor
+
+            if identifier is None:
+                print_message("Monitor ID not specified")
+                print_message("Will attempt to change settings for primary monitor")
+                identifier = get_primary_monitor(all_monitors).identifier()
+
+            if args.hdr.lower() not in ['enable', 'disable']:
+                print_error("Valid values for HDR are 'enable' or 'disable'")
+                exit(-1)
+
+            for target_monitor in all_monitors:
+                if target_monitor.adapter.identifier == identifier:
+                    if not target_monitor.is_hdr_supported():
+                        print_success(f"{target_monitor.adapter.identifier} does not support HDR")
+                        print_success("Exiting...")
+                        exit(0)
+
+                    hdr_state = True if args.hdr.lower() == 'enable' else False
+
+                    print_message(f'Attempting to {"enable" if hdr_state else "disable"} HDR on {identifier}')
+                    set_hdr_state_for_monitor(hdr_state, target_monitor)
+                    print_success(f"HDR {'enabled' if hdr_state else 'disabled'} successfully")
+
+        except HdrException as e:
+            print_error(f"Error when trying to change HDR state. Failed with error {str(e)}")
+            exit(-1)
+
+        except PrimaryMonitorException as e:
+            print_error(str(e))
+            exit(-1)
+
+    elif args.monitor is not None:
+        identifier: str = args.monitor
+
+        for target_monitor in all_monitors:
+            if target_monitor.adapter.identifier == identifier:
+                print_message("")
+                print_monitor_info(target_monitor)
+                print_message("")
+                print_all_available_modes_for_monitor(target_monitor)
+
+                exit(0)
+
+        print_error(f'Device {identifier} not found')
+        exit(-1)
+
+    else:
+        print_message(f'Monitors found: {len(all_monitors)}\n')
+
+        for target_monitor in all_monitors:
+            print_monitor_info(target_monitor)
+            print_message("")

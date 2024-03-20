@@ -1,6 +1,6 @@
 # ResolutionSwitcher
 
-A command line tool to change the display resolution of computers running Windows.
+A command line tool to change the display resolution and HDR state of computers running Windows.
 
 ## Usage Examples
 
@@ -10,10 +10,10 @@ List all available devices on the system
 ResolutionSwitcher
 ```
 
-Display all available resolutions for device with identifier `\\.\DISPLAY2`
+Display detailed information for device with identifier `\\.\DISPLAY2`
 
 ```shell
-ResolutionSwitcher --device \\.\DISPLAY2
+ResolutionSwitcher --monitor \\.\DISPLAY2
 ```
 
 Change the resolution of the primary display device
@@ -25,7 +25,19 @@ ResolutionSwitcher --width 1920 --height 1080 --refresh 60
 Change the resolution of device with identifier `\\.\DISPLAY2`
 
 ```shell
-ResolutionSwitcher --width 1920 --height 1080 --refresh 60 --device \\.\DISPLAY2
+ResolutionSwitcher --width 1920 --height 1080 --refresh 60 --monitor \\.\DISPLAY2
+```
+
+Enable HDR on device with identifier `\\.\DISPLAY2`
+
+```shell
+ResolutionSwitcher --hdr enable --monitor \\.\DISPLAY2
+```
+
+Disable HDR on the primary device
+
+```shell
+ResolutionSwitcher --hdr disable
 ```
 
 Display available help information
@@ -41,21 +53,29 @@ during "do" and "undo" commands run as part of a [Moonlight](https://moonlight-s
 
 These examples assume the application is installed at `C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe`.
 
-### Do Command
+### Do Commands
 
 ```shell
 cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width %SUNSHINE_CLIENT_WIDTH% --height %SUNSHINE_CLIENT_HEIGHT% --refresh %SUNSHINE_CLIENT_FPS%
 ```
 
-### Undo Command
+
+```shell
+cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --hdr disable
+```
+
+### Undo Commands
 
 ```shell
 cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width 3840 --height 2160 --refresh 144
 ```
 
+```shell
+cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --hdr enable
+```
+
 ## Building
 
-The tool is written in [Python](https://www.python.org/) and uses [`pywin32`](https://pypi.org/project/pywin32/) to
-interact with the Windows API.
+The tool is written in [Python](https://www.python.org/) and uses the [ctypes](https://docs.python.org/3/library/ctypes.html) library to interact with the Windows API.
 
 For distribution, the Python script is compiled into an executable using [`pyinstaller`](https://www.pyinstaller.org/).
