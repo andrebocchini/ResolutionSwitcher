@@ -5,7 +5,7 @@ from termcolor import colored, cprint
 # Functions for getting display devices and settings
 from win32api import EnumDisplayDevices
 from win32api import EnumDisplaySettings
-from win32api import ChangeDisplaySettings
+from win32api import ChangeDisplaySettingsEx
 
 # Display device state flags
 from win32con import DISPLAY_DEVICE_ATTACHED_TO_DESKTOP
@@ -32,7 +32,7 @@ from win32con import DISP_CHANGE_BADDUALVIEW
 from pywintypes import DEVMODEWType
 
 # Application metadata
-VERSION: str = "v2.0.0"
+VERSION: str = "v2.0.1"
 NAME: str = "ResolutionSwitcher"
 
 # Terminal colors
@@ -154,11 +154,11 @@ def print_device_info(device: DisplayDevice, detailed: bool = False):
             pass
 
 
-def set_device_mode(device_mode: DEVMODEWType) -> int:
+def set_device_mode(device_identifier: str, device_mode: DEVMODEWType) -> int:
     if device_mode is None:
         raise ValueError("Display settings cannot be empty")
 
-    return ChangeDisplaySettings(device_mode, 0)
+    return ChangeDisplaySettingsEx(device_identifier, device_mode, 0)
 
 
 def print_human_readable_mode_change_result(result: int):
@@ -252,7 +252,7 @@ if __name__ == '__main__':
         else:
             print_message(f'Attempting to change primary display settings to: {str(new_mode)}')
 
-        device_mode_change_result: int = set_device_mode(new_mode_as_devmodew_type)
+        device_mode_change_result: int = set_device_mode(args.device, new_mode_as_devmodew_type)
         print_human_readable_mode_change_result(device_mode_change_result)
 
         if device_mode_change_result != DISP_CHANGE_SUCCESSFUL:
