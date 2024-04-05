@@ -31,13 +31,13 @@ ResolutionSwitcher --width 1920 --height 1080 --refresh 60 --monitor \\.\DISPLAY
 Enable HDR on device with identifier `\\.\DISPLAY2`
 
 ```shell
-ResolutionSwitcher --hdr enable --monitor \\.\DISPLAY2
+ResolutionSwitcher --hdr true --monitor \\.\DISPLAY2
 ```
 
 Disable HDR on the primary device
 
 ```shell
-ResolutionSwitcher --hdr disable
+ResolutionSwitcher --hdr false
 ```
 
 Display available help information
@@ -56,22 +56,13 @@ These examples assume the application is installed at `C:\Program Files\Resoluti
 ### Do Commands
 
 ```shell
-cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width %SUNSHINE_CLIENT_WIDTH% --height %SUNSHINE_CLIENT_HEIGHT% --refresh %SUNSHINE_CLIENT_FPS%
-```
-
-
-```shell
-cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --hdr disable
+cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width %SUNSHINE_CLIENT_WIDTH% --height %SUNSHINE_CLIENT_HEIGHT% --refresh %SUNSHINE_CLIENT_FPS% --hdr %SUNSHINE_CLIENT_HDR%
 ```
 
 ### Undo Commands
 
 ```shell
-cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width 3840 --height 2160 --refresh 144
-```
-
-```shell
-cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --hdr enable
+cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width 3840 --height 2160 --refresh 144 --hdr false
 ```
 
 ## Building
