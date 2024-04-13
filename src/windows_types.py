@@ -7,17 +7,9 @@ from ctypes.wintypes import (
     LONG,
     LPCVOID,
     WCHAR,
-    SHORT
+    SHORT,
 )
-from ctypes import (
-    c_uint32,
-    c_uint16,
-    c_uint64,
-    Structure,
-    Union,
-    WinDLL,
-    POINTER
-)
+from ctypes import c_uint32, c_uint16, c_uint64, Structure, Union, WinDLL, POINTER
 from enum import IntEnum
 
 CCHDEVICENAME: int = 32
@@ -62,10 +54,7 @@ DISP_CHANGE_BADDUALVIEW = -6
 
 
 class LUID(Structure):
-    _fields_ = [
-        ("lowPart", DWORD),
-        ("highPart", LONG)
-    ]
+    _fields_ = [("lowPart", DWORD), ("highPart", LONG)]
 
 
 class PATH_INFO_DUMMY_STRUCT_NAME(Structure):
@@ -76,10 +65,7 @@ class PATH_INFO_DUMMY_STRUCT_NAME(Structure):
 
 
 class PATH_INFO_DUMMY_UNION_NAME(Union):
-    _fields_ = [
-        ("modeInfoIdx", c_uint32),
-        ("dummyStruct", PATH_INFO_DUMMY_STRUCT_NAME)
-    ]
+    _fields_ = [("modeInfoIdx", c_uint32), ("dummyStruct", PATH_INFO_DUMMY_STRUCT_NAME)]
 
 
 class DISPLAYCONFIG_PATH_SOURCE_INFO(Structure):
@@ -87,7 +73,7 @@ class DISPLAYCONFIG_PATH_SOURCE_INFO(Structure):
         ("adapterId", LUID),
         ("id", c_uint32),
         ("dummyUnion", PATH_INFO_DUMMY_UNION_NAME),
-        ("statusFlags", c_uint32)
+        ("statusFlags", c_uint32),
     ]
 
 
@@ -132,10 +118,7 @@ class DISPLAYCONFIG_SCALING(IntEnum):
 
 
 class DISPLAYCONFIG_RATIONAL(Structure):
-    _fields_ = [
-        ("numerator", c_uint32),
-        ("denominator", c_uint32)
-    ]
+    _fields_ = [("numerator", c_uint32), ("denominator", c_uint32)]
 
 
 class DISPLAYCONFIG_SCANLINE_ORDERING(IntEnum):
@@ -155,7 +138,7 @@ class DISPLAYCONFIG_PATH_TARGET_INFO(Structure):
         ("rational", DISPLAYCONFIG_RATIONAL),
         ("scanlineOrdering", c_uint32),  # DISPLAYCONFIG_SCANLINE_ORDERING
         ("targetAvailable", c_uint32),
-        ("statusFlags", c_uint32)
+        ("statusFlags", c_uint32),
     ]
 
 
@@ -167,10 +150,7 @@ class DISPLAYCONFIG_MODE_INFO_TYPE(IntEnum):
 
 
 class DISPLAYCONFIG_2DREGION(Structure):
-    _fields_ = [
-        ("cx", c_uint32),
-        ("cy", c_uint32)
-    ]
+    _fields_ = [("cx", c_uint32), ("cy", c_uint32)]
 
 
 class DISPLAYCONFIG_DUMMY_STRUCT_NAME(Structure):
@@ -196,14 +176,12 @@ class DISPLAYCONFIG_VIDEO_SIGNAL_INFO(Structure):
         ("activeSize", DISPLAYCONFIG_2DREGION),
         ("totalSize", DISPLAYCONFIG_2DREGION),
         ("dummyUnion", DISPLAYCONFIG_DUMMY_UNION_NAME),
-        ("scanLineOrdering", c_uint32)  # DISPLAYCONFIG_SCANLINE_ORDERING
+        ("scanLineOrdering", c_uint32),  # DISPLAYCONFIG_SCANLINE_ORDERING
     ]
 
 
 class DISPLAYCONFIG_TARGET_MODE(Structure):
-    _fields_ = [
-        ("targetVideoSignalInfo", DISPLAYCONFIG_VIDEO_SIGNAL_INFO)
-    ]
+    _fields_ = [("targetVideoSignalInfo", DISPLAYCONFIG_VIDEO_SIGNAL_INFO)]
 
 
 class DISPLAYCONFIG_PIXELFORMAT(IntEnum):
@@ -220,7 +198,7 @@ class DISPLAYCONFIG_SOURCE_MODE(Structure):
         ("width", c_uint32),
         ("height", c_uint32),
         ("pixelFormat", c_uint32),  # DISPLAYCONFIG_PIXELFORMAT
-        ("position", POINTL)
+        ("position", POINTL),
     ]
 
 
@@ -228,7 +206,7 @@ class DISPLAYCONFIG_DESKTOP_IMAGE_INFO(Structure):
     _fields_ = [
         ("pathSourceSize", POINTL),
         ("desktopImageRegion", RECTL),
-        ("desktopImageClip", RECTL)
+        ("desktopImageClip", RECTL),
     ]
 
 
@@ -236,7 +214,7 @@ class DISPLAYCONFIG_MODE_INFO_DUMMY_UNION_NAME(Union):
     _fields_ = [
         ("targetMode", DISPLAYCONFIG_TARGET_MODE),
         ("sourceMode", DISPLAYCONFIG_SOURCE_MODE),
-        ("desktopImageInfo", DISPLAYCONFIG_DESKTOP_IMAGE_INFO)
+        ("desktopImageInfo", DISPLAYCONFIG_DESKTOP_IMAGE_INFO),
     ]
 
 
@@ -245,7 +223,7 @@ class DISPLAYCONFIG_MODE_INFO(Structure):
         ("infoType", c_uint32),  # DISPLAYCONFIG_MODE_INFO_TYPE
         ("id", DWORD),
         ("adapterId", LUID),
-        ("dummyUnion", DISPLAYCONFIG_MODE_INFO_DUMMY_UNION_NAME)
+        ("dummyUnion", DISPLAYCONFIG_MODE_INFO_DUMMY_UNION_NAME),
     ]
 
 
@@ -253,7 +231,7 @@ class DISPLAYCONFIG_PATH_INFO(Structure):
     _fields_ = [
         ("sourceInfo", DISPLAYCONFIG_PATH_SOURCE_INFO),
         ("targetInfo", DISPLAYCONFIG_PATH_TARGET_INFO),
-        ("flags", c_uint32)
+        ("flags", c_uint32),
     ]
 
 
@@ -277,7 +255,7 @@ class DISPLAYCONFIG_DEVICE_INFO_HEADER(Structure):
         ("type", c_uint32),  # DISPLAYCONFIG_DEVICE_INFO_TYPE
         ("size", c_uint32),
         ("adapterId", LUID),
-        ("id", c_uint32)
+        ("id", c_uint32),
     ]
 
 
@@ -294,21 +272,19 @@ class DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO(Structure):
         ("header", DISPLAYCONFIG_DEVICE_INFO_HEADER),
         ("value", c_uint32),
         ("colorEncoding", c_uint32),  # DISPLAYCONFIG_COLOR_ENCODING
-        ("bitsPerColorChannel", c_uint32)
+        ("bitsPerColorChannel", c_uint32),
     ]
 
 
 class DISPLAYCONFIG_SOURCE_DEVICE_NAME(Structure):
     _fields_ = [
         ("header", DISPLAYCONFIG_DEVICE_INFO_HEADER),
-        ("viewGdiDeviceName", WCHAR * CCHDEVICENAME)
+        ("viewGdiDeviceName", WCHAR * CCHDEVICENAME),
     ]
 
 
 class DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS(Structure):
-    _fields_ = [
-        ("value", c_uint32)
-    ]
+    _fields_ = [("value", c_uint32)]
 
 
 class DISPLAYCONFIG_TARGET_DEVICE_NAME(Structure):
@@ -320,14 +296,14 @@ class DISPLAYCONFIG_TARGET_DEVICE_NAME(Structure):
         ("edidProductCodeId", c_uint16),
         ("connectorInstance", c_uint32),
         ("monitorFriendlyDeviceName", WCHAR * 64),
-        ("monitorDevicePath", WCHAR * 128)
+        ("monitorDevicePath", WCHAR * 128),
     ]
 
 
 class DISPLAYCONFIG_ADAPTER_NAME(Structure):
     _fields_ = [
         ("header", DISPLAYCONFIG_DEVICE_INFO_HEADER),
-        ("adapterDevicePath", WCHAR * 128)
+        ("adapterDevicePath", WCHAR * 128),
     ]
 
 
@@ -356,15 +332,12 @@ class DEVMODEW_DUMMY_UNION_NAME(Union):
     _fields_ = [
         ("dummyStruct", DEMOVEDW_DUMMY_STRUCT_NAME),
         ("dmPosition", POINTL),
-        ("dummyStruct2", DEVMODEW_DUMMY_STRUCT_NAME2)
+        ("dummyStruct2", DEVMODEW_DUMMY_STRUCT_NAME2),
     ]
 
 
 class DEVMODEW_DUMMY_UNION_NAME2(Union):
-    _fields_ = [
-        ("dmDisplayFlags", DWORD),
-        ("dmNup", DWORD)
-    ]
+    _fields_ = [("dmDisplayFlags", DWORD), ("dmNup", DWORD)]
 
 
 class DEVMODEW(Structure):
@@ -395,7 +368,7 @@ class DEVMODEW(Structure):
         ("dmReserved1", DWORD),
         ("dmReserved2", DWORD),
         ("dmPanningWidth", DWORD),
-        ("dmPanningHeight", DWORD)
+        ("dmPanningHeight", DWORD),
     ]
 
 
@@ -406,19 +379,19 @@ class DISPLAY_DEVICEW(Structure):
         ("DeviceString", WCHAR * 128),
         ("StateFlags", DWORD),
         ("DeviceID", WCHAR * 128),
-        ("DeviceKey", WCHAR * 128)
+        ("DeviceKey", WCHAR * 128),
     ]
 
 
 class DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE(Structure):
     _fields_ = [
         ("header", DISPLAYCONFIG_DEVICE_INFO_HEADER),
-        ("enableAdvancedColor", c_uint32)
+        ("enableAdvancedColor", c_uint32),
     ]
 
 
 # Imported API functions
-user32DLL = WinDLL('user32')
+user32DLL = WinDLL("user32")
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-changedisplaysettingsexw
 ChangeDisplaySettingsExW = user32DLL.ChangeDisplaySettingsExW
@@ -459,5 +432,5 @@ QueryDisplayConfig.argtypes = [
     POINTER(DISPLAYCONFIG_PATH_INFO),
     POINTER(c_uint32),
     POINTER(DISPLAYCONFIG_MODE_INFO),
-    POINTER(c_uint32)
+    POINTER(c_uint32),
 ]

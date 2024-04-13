@@ -11,18 +11,20 @@ class DisplayMode:
         self.refresh: int = refresh
 
     def __str__(self):
-        return str(self.width) + "x" + str(self.height) + " @ " + str(self.refresh) + "Hz"
+        return (
+            str(self.width) + "x" + str(self.height) + " @ " + str(self.refresh) + "Hz"
+        )
 
 
 class DisplayAdapter:
     def __init__(
-            self,
-            identifier: str = "",
-            display_name: str = "",
-            active_mode: DisplayMode = None,
-            available_modes: list[DisplayMode] = None,
-            is_attached: bool = False,
-            is_primary: bool = False
+        self,
+        identifier: str = "",
+        display_name: str = "",
+        active_mode: DisplayMode = None,
+        available_modes: list[DisplayMode] = None,
+        is_attached: bool = False,
+        is_primary: bool = False,
     ):
         self.identifier: str = identifier
         self.display_name: str = display_name
@@ -34,11 +36,11 @@ class DisplayAdapter:
 
 class DisplayMonitor:
     def __init__(
-            self,
-            name: str = "",
-            adapter: DisplayAdapter = DisplayAdapter(),
-            mode_info: DISPLAYCONFIG_MODE_INFO = None,
-            color_info: DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO = None
+        self,
+        name: str = "",
+        adapter: DisplayAdapter = DisplayAdapter(),
+        mode_info: DISPLAYCONFIG_MODE_INFO = None,
+        color_info: DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO = None,
     ):
         self.name: str = name
         self.adapter: DisplayAdapter = adapter
