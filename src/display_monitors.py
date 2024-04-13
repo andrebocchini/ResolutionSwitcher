@@ -13,16 +13,22 @@ from windows_types import (
     DisplayConfigGetDeviceInfo,
     DisplayConfigSetDeviceInfo,
     GetDisplayConfigBufferSizes,
-    QueryDisplayConfig
+    QueryDisplayConfig,
 )
 from display_adapters import get_all_display_adapters, DisplayAdapter
-from custom_types import DisplayMonitor, DisplayMonitorException, PrimaryMonitorException
+from custom_types import (
+    DisplayMonitor,
+    DisplayMonitorException,
+    PrimaryMonitorException,
+)
 from ctypes import c_ulong, sizeof, byref
 
 
 def get_adapter_name(mode_info: DISPLAYCONFIG_MODE_INFO) -> str:
     adapter_info = DISPLAYCONFIG_ADAPTER_NAME()
-    adapter_info.header.type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME
+    adapter_info.header.type = (
+        DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME
+    )
     adapter_info.header.size = sizeof(DISPLAYCONFIG_ADAPTER_NAME)
     adapter_info.header.adapterId = mode_info.adapterId
 
@@ -30,7 +36,9 @@ def get_adapter_name(mode_info: DISPLAYCONFIG_MODE_INFO) -> str:
         result: int = DisplayConfigGetDeviceInfo(byref(adapter_info.header))
 
         if result != ERROR_SUCCESS:
-            raise DisplayMonitorException(f"Failed to get adapter name with result {result}")
+            raise DisplayMonitorException(
+                f"Failed to get adapter name with result {result}"
+            )
 
         return str(adapter_info.adapterDevicePath)
     except OSError as e:
@@ -39,7 +47,9 @@ def get_adapter_name(mode_info: DISPLAYCONFIG_MODE_INFO) -> str:
 
 def get_monitor_source_name(path_source_info: DISPLAYCONFIG_PATH_SOURCE_INFO) -> str:
     device_info = DISPLAYCONFIG_SOURCE_DEVICE_NAME()
-    device_info.header.type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME
+    device_info.header.type = (
+        DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME
+    )
     device_info.header.size = sizeof(DISPLAYCONFIG_SOURCE_DEVICE_NAME)
     device_info.header.adapterId = path_source_info.adapterId
     device_info.header.id = path_source_info.id
@@ -48,7 +58,9 @@ def get_monitor_source_name(path_source_info: DISPLAYCONFIG_PATH_SOURCE_INFO) ->
         result: int = DisplayConfigGetDeviceInfo(byref(device_info.header))
 
         if result != ERROR_SUCCESS:
-            raise DisplayMonitorException(f"Failed to get monitor source with result {result}")
+            raise DisplayMonitorException(
+                f"Failed to get monitor source with result {result}"
+            )
 
         return str(device_info.viewGdiDeviceName)
 
@@ -58,7 +70,9 @@ def get_monitor_source_name(path_source_info: DISPLAYCONFIG_PATH_SOURCE_INFO) ->
 
 def get_monitor_name(mode_info: DISPLAYCONFIG_MODE_INFO) -> str:
     device_info = DISPLAYCONFIG_TARGET_DEVICE_NAME()
-    device_info.header.type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME
+    device_info.header.type = (
+        DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME
+    )
     device_info.header.size = sizeof(DISPLAYCONFIG_TARGET_DEVICE_NAME)
     device_info.header.adapterId = mode_info.adapterId
     device_info.header.id = mode_info.id
@@ -67,7 +81,9 @@ def get_monitor_name(mode_info: DISPLAYCONFIG_MODE_INFO) -> str:
         result: int = DisplayConfigGetDeviceInfo(byref(device_info.header))
 
         if result != ERROR_SUCCESS:
-            raise DisplayMonitorException(f"Failed to get monitor name with result {result}")
+            raise DisplayMonitorException(
+                f"Failed to get monitor name with result {result}"
+            )
 
         return str(device_info.monitorFriendlyDeviceName)
 
@@ -75,9 +91,13 @@ def get_monitor_name(mode_info: DISPLAYCONFIG_MODE_INFO) -> str:
         raise DisplayMonitorException(f"Failed to get monitor name with error {e}")
 
 
-def get_monitor_color_info(mode_info: DISPLAYCONFIG_MODE_INFO) -> DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO:
+def get_monitor_color_info(
+    mode_info: DISPLAYCONFIG_MODE_INFO,
+) -> DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO:
     color_info = DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO()
-    color_info.header.type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO
+    color_info.header.type = (
+        DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO
+    )
     color_info.header.size = sizeof(DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO)
     color_info.header.adapterId.highPart = mode_info.adapterId.highPart
     color_info.header.adapterId.lowPart = mode_info.adapterId.lowPart
@@ -87,12 +107,16 @@ def get_monitor_color_info(mode_info: DISPLAYCONFIG_MODE_INFO) -> DISPLAYCONFIG_
         result: int = DisplayConfigGetDeviceInfo(byref(color_info.header))
 
         if result != ERROR_SUCCESS:
-            raise DisplayMonitorException(f"Failed to get monitor color info with result {result}")
+            raise DisplayMonitorException(
+                f"Failed to get monitor color info with result {result}"
+            )
 
         return color_info
 
     except OSError as e:
-        raise DisplayMonitorException(f"Failed to get monitor color info with error {e}")
+        raise DisplayMonitorException(
+            f"Failed to get monitor color info with error {e}"
+        )
 
 
 def set_hdr_state_for_monitor(enabled: bool, monitor: DisplayMonitor):
@@ -141,7 +165,7 @@ def get_all_display_monitors() -> list[DisplayMonitor]:
         config_buffers_result: int = GetDisplayConfigBufferSizes(
             QDC_ONLY_ACTIVE_PATHS,
             byref(number_of_active_display_paths),
-            byref(number_of_active_display_modes)
+            byref(number_of_active_display_modes),
         )
 
         # We don't want to continue if we don't know the buffer sizes
@@ -152,8 +176,8 @@ def get_all_display_monitors() -> list[DisplayMonitor]:
 
     except OSError as e:
         raise DisplayMonitorException(
-                f"Failed to determine monitor config buffer size with error {e}"
-            )
+            f"Failed to determine monitor config buffer size with error {e}"
+        )
 
     # Pre-allocate space to store the display paths and modes based on the previously retrieved buffer sizes
     paths = (DISPLAYCONFIG_PATH_INFO * number_of_active_display_paths.value)()
@@ -163,14 +187,18 @@ def get_all_display_monitors() -> list[DisplayMonitor]:
         # Get the display config and store it in the pre-allocated space (paths and modes)
         display_config_result: int = QueryDisplayConfig(
             QDC_ONLY_ACTIVE_PATHS,
-            byref(number_of_active_display_paths), byref(paths[0]),
-            byref(number_of_active_display_modes), byref(modes[0]),
-            None
+            byref(number_of_active_display_paths),
+            byref(paths[0]),
+            byref(number_of_active_display_modes),
+            byref(modes[0]),
+            None,
         )
 
         # We don't want to continue if we don't know the display config
         if display_config_result != ERROR_SUCCESS:
-            raise DisplayMonitorException(f"Failed to get display config with result {display_config_result}")
+            raise DisplayMonitorException(
+                f"Failed to get display config with result {display_config_result}"
+            )
 
     except OSError as e:
         raise DisplayMonitorException(f"Failed to get display config with error {e}")
@@ -201,6 +229,8 @@ def get_all_display_monitors() -> list[DisplayMonitor]:
                 connected_monitors.append(monitor)
 
             except DisplayMonitorException as e:
-                raise DisplayMonitorException(f"Failed to get settings and other information with error {e}")
+                raise DisplayMonitorException(
+                    f"Failed to get settings and other information with error {e}"
+                )
 
     return connected_monitors
