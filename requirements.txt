@@ -4,12 +4,14 @@ colorama==0.4.6
 dill==0.3.8
 isort==5.13.2
 mccabe==0.7.0
+nodeenv==1.8.0
 packaging==23.2
 pefile==2023.2.7
 platformdirs==4.2.0
 pyinstaller==6.4.0
 pyinstaller-hooks-contrib==2024.2
 pylint==3.1.0
+pyright==1.1.358
 pywin32==306
 pywin32-ctypes==0.2.2
 ruff==0.3.7
