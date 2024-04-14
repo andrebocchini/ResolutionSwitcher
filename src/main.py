@@ -1,6 +1,8 @@
+from typing import Iterable, Optional
 from sys import stdout, stderr, exit
 from argparse import ArgumentParser
 from termcolor import colored, cprint
+from termcolor._types import Attribute, Color
 from display_adapters import DisplayMode, set_display_mode_for_device
 from custom_types import DisplayAdapterException, PrimaryMonitorException, HdrException
 from display_monitors import (
@@ -20,11 +22,12 @@ def print_all_available_modes_for_monitor(monitor: DisplayMonitor):
 
     print_message("[Available Modes]\n", "blue", attrs=["bold"])
 
-    for i in range(0, len(monitor.adapter.available_modes)):
-        print_message(f"{monitor.adapter.available_modes[i]}".ljust(25), end="")
+    if monitor.adapter.available_modes is not None:
+        for i in range(0, len(monitor.adapter.available_modes)):
+            print_message(f"{monitor.adapter.available_modes[i]}".ljust(25), end="")
 
-        if (i + 1) % number_of_columns == 0:
-            print_message("")
+            if (i + 1) % number_of_columns == 0:
+                print_message("")
 
 
 def print_monitor_info(monitor: DisplayMonitor):
@@ -37,7 +40,7 @@ def print_monitor_info(monitor: DisplayMonitor):
     print_message(f"Primary:".ljust(justification) + f"{monitor.is_primary()}")
     print_message(f"Attached:".ljust(justification) + f"{monitor.is_attached()}")
 
-    hdr_supported = monitor.is_hdr_supported()
+    hdr_supported: bool = monitor.is_hdr_supported()
 
     print_message(f"HDR Supported:".ljust(justification) + f"{hdr_supported}")
 
@@ -85,10 +88,10 @@ def argument_parser() -> ArgumentParser:
 
 def print_message(
     message: str,
-    color: str = None,
-    attrs: list[str] = None,
-    end: str = None,
-    is_error: bool = False,
+    color: Optional[Color] = None,
+    attrs: Optional[Iterable[Attribute]] = None,
+    end: Optional[str] = None,
+    is_error: Optional[bool] = False,
 ):
     file = stderr if is_error else stdout
     colored_message = colored(message, color, attrs=attrs)

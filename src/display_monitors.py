@@ -1,3 +1,4 @@
+from typing import Optional
 from windows_types import (
     DISPLAYCONFIG_PATH_INFO,
     DISPLAYCONFIG_MODE_INFO,
@@ -120,6 +121,11 @@ def get_monitor_color_info(
 
 
 def set_hdr_state_for_monitor(enabled: bool, monitor: DisplayMonitor):
+    if monitor.mode_info is None:
+        raise DisplayMonitorException(
+            "Cannot change HDR state for monitor without mode info"
+        )
+
     mode_info: DISPLAYCONFIG_MODE_INFO = monitor.mode_info
 
     color_state = DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE()

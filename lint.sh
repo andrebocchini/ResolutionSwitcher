@@ -8,4 +8,12 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+pyright src/*.py
+
+if [[ $? -ne 0 ]]; then
+    echo
+    echo -n "Pyright detected errors that need to be fixed. Exiting."
+    exit 1
+fi
+
 ruff format
