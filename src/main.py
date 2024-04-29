@@ -67,22 +67,31 @@ def argument_parser() -> ArgumentParser:
         "--monitors", action="store_true", help="List all active monitors"
     )
     monitor_group.add_argument(
-        "--monitor", type=str, help="List all available modes for a monitor"
+        "--monitor",
+        type=str,
+        help="List all available modes for a monitor (e.g. \\\\.\\DISPLAY1)",
     )
 
     mode_change_group = p.add_argument_group()
     mode_change_group.add_argument(
-        "--width", type=int, help="The width of the new display mode"
+        "--width", type=int, help="The width of the new display mode (e.g. 1920)"
     )
     mode_change_group.add_argument(
-        "--height", type=int, help="The height of the new display mode"
+        "--height", type=int, help="The height of the new display mode (e.g. 1080)"
     )
     mode_change_group.add_argument(
-        "--refresh", type=int, help="The refresh rate of the new display mode"
+        "--refresh",
+        type=int,
+        help="The refresh rate of the new display mode (e.g. 144)",
     )
 
     hdr_group = p.add_argument_group()
-    hdr_group.add_argument("--hdr", type=str, help="Enable/Disable HDR on the monitor")
+    hdr_group.add_argument(
+        "--hdr",
+        type=str,
+        metavar="<true|false>",
+        help="Enable/Disable HDR on the monitor",
+    )
 
     return p
 
