@@ -1,28 +1,29 @@
+from ctypes import byref, c_ulong, sizeof
 from typing import Optional
-from windows_types import (
-    DISPLAYCONFIG_PATH_INFO,
-    DISPLAYCONFIG_MODE_INFO,
-    DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO,
-    DISPLAYCONFIG_ADAPTER_NAME,
-    DISPLAYCONFIG_DEVICE_INFO_TYPE,
-    DISPLAYCONFIG_TARGET_DEVICE_NAME,
-    DISPLAYCONFIG_SOURCE_DEVICE_NAME,
-    DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE,
-    DISPLAYCONFIG_PATH_SOURCE_INFO,
-    QDC_ONLY_ACTIVE_PATHS,
-    ERROR_SUCCESS,
-    DisplayConfigGetDeviceInfo,
-    DisplayConfigSetDeviceInfo,
-    GetDisplayConfigBufferSizes,
-    QueryDisplayConfig,
-)
-from display_adapters import get_all_display_adapters, DisplayAdapter
+
 from custom_types import (
     DisplayMonitor,
     DisplayMonitorException,
     PrimaryMonitorException,
 )
-from ctypes import c_ulong, sizeof, byref
+from display_adapters import DisplayAdapter, get_all_display_adapters
+from windows_types import (
+    DISPLAYCONFIG_ADAPTER_NAME,
+    DISPLAYCONFIG_DEVICE_INFO_TYPE,
+    DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO,
+    DISPLAYCONFIG_MODE_INFO,
+    DISPLAYCONFIG_PATH_INFO,
+    DISPLAYCONFIG_PATH_SOURCE_INFO,
+    DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE,
+    DISPLAYCONFIG_SOURCE_DEVICE_NAME,
+    DISPLAYCONFIG_TARGET_DEVICE_NAME,
+    ERROR_SUCCESS,
+    QDC_ONLY_ACTIVE_PATHS,
+    DisplayConfigGetDeviceInfo,
+    DisplayConfigSetDeviceInfo,
+    GetDisplayConfigBufferSizes,
+    QueryDisplayConfig,
+)
 
 
 def get_adapter_name(mode_info: DISPLAYCONFIG_MODE_INFO) -> str:

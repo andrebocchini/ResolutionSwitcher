@@ -1,16 +1,17 @@
-from typing import Iterable, Optional
-from sys import stdout, stderr, exit
 from argparse import ArgumentParser
+from sys import exit, stderr, stdout
+from typing import Iterable, Optional
+
+from custom_types import DisplayAdapterException, HdrException, PrimaryMonitorException
+from display_adapters import DisplayMode, set_display_mode_for_device
+from display_monitors import (
+    DisplayMonitor,
+    get_all_display_monitors,
+    get_primary_monitor,
+    set_hdr_state_for_monitor,
+)
 from termcolor import colored, cprint
 from termcolor._types import Attribute, Color
-from display_adapters import DisplayMode, set_display_mode_for_device
-from custom_types import DisplayAdapterException, PrimaryMonitorException, HdrException
-from display_monitors import (
-    get_all_display_monitors,
-    DisplayMonitor,
-    set_hdr_state_for_monitor,
-    get_primary_monitor,
-)
 
 # Application metadata
 VERSION: str = "v3.0.1"

@@ -1,15 +1,15 @@
+from ctypes import POINTER, Structure, Union, WinDLL, c_uint16, c_uint32, c_uint64
 from ctypes.wintypes import (
-    POINTL,
-    RECTL,
-    LPCWSTR,
-    HWND,
     DWORD,
+    HWND,
     LONG,
     LPCVOID,
-    WCHAR,
+    LPCWSTR,
+    POINTL,
+    RECTL,
     SHORT,
+    WCHAR,
 )
-from ctypes import c_uint32, c_uint16, c_uint64, Structure, Union, WinDLL, POINTER
 from enum import IntEnum
 
 CCHDEVICENAME: int = 32

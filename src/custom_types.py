@@ -1,7 +1,8 @@
 from typing import Optional
+
 from windows_types import (
-    DISPLAYCONFIG_MODE_INFO,
     DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO,
+    DISPLAYCONFIG_MODE_INFO,
 )
 
 

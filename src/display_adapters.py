@@ -1,26 +1,27 @@
+from ctypes import byref, sizeof
+
+from custom_types import DisplayAdapter, DisplayAdapterException, DisplayMode
 from windows_types import (
-    DISP_CHANGE_SUCCESSFUL,
-    DISP_CHANGE_RESTART,
+    DEVMODEW,
+    DISP_CHANGE_BADDUALVIEW,
     DISP_CHANGE_BADFLAGS,
     DISP_CHANGE_BADMODE,
     DISP_CHANGE_BADPARAM,
     DISP_CHANGE_FAILED,
     DISP_CHANGE_NOTUPDATED,
-    DISP_CHANGE_BADDUALVIEW,
+    DISP_CHANGE_RESTART,
+    DISP_CHANGE_SUCCESSFUL,
     DISPLAY_DEVICE_ATTACHED_TO_DESKTOP,
     DISPLAY_DEVICE_PRIMARY_DEVICE,
-    ENUM_CURRENT_SETTINGS,
-    DEVMODEW,
     DISPLAY_DEVICEW,
-    ChangeDisplaySettingsExW,
-    EnumDisplaySettingsW,
-    EnumDisplayDevicesW,
+    DM_DISPLAYFREQUENCY,
     DM_PELSHEIGHT,
     DM_PELSWIDTH,
-    DM_DISPLAYFREQUENCY,
+    ENUM_CURRENT_SETTINGS,
+    ChangeDisplaySettingsExW,
+    EnumDisplayDevicesW,
+    EnumDisplaySettingsW,
 )
-from custom_types import DisplayAdapter, DisplayMode, DisplayAdapterException
-from ctypes import sizeof, byref
 
 
 def is_attached_to_desktop(adapter: DISPLAY_DEVICEW) -> bool:
