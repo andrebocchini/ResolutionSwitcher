@@ -77,13 +77,21 @@ These examples assume the application is installed at `C:\Program Files\Resoluti
 ## Do Commands
 
 ```shell
-cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width %SUNSHINE_CLIENT_WIDTH% --height %SUNSHINE_CLIENT_HEIGHT% --refresh %SUNSHINE_CLIENT_FPS% --hdr %SUNSHINE_CLIENT_HDR%
+cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width %SUNSHINE_CLIENT_WIDTH% --height %SUNSHINE_CLIENT_HEIGHT% --refresh %SUNSHINE_CLIENT_FPS%
+```
+
+```shell
+cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --hdr %SUNSHINE_CLIENT_HDR%
 ```
 
 ## Undo Commands
 
 ```shell
-cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width 3840 --height 2160 --refresh 144 --hdr false
+cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width 3840 --height 2160 --refresh 144
+```
+
+```shell
+cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --hdr false
 ```
 
 # Building
@@ -91,3 +99,9 @@ cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --width 3840
 The tool is written in [Python](https://www.python.org/) and uses the [ctypes](https://docs.python.org/3/library/ctypes.html) library to interact with the Windows API.
 
 For distribution, the Python script is compiled into an executable using [`pyinstaller`](https://www.pyinstaller.org/).
+
+# Known Issues
+
+Sometimes when changing HDR state, the screen resolution may reset to a previous
+resolution. As far as I can tell, this is a behavior of the Windows API, so if that's 
+happening to you, you might want to do an HDR change followed by a resolution change.

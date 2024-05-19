@@ -1,5 +1,6 @@
 from ctypes import POINTER, Structure, Union, WinDLL, c_uint16, c_uint32, c_uint64
 from ctypes.wintypes import (
+    BOOL,
     DWORD,
     HWND,
     LONG,
@@ -392,6 +393,7 @@ class DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE(Structure):
 
 # Imported API functions
 user32DLL = WinDLL("user32")
+mscmsDLL = WinDLL("mscms")
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-changedisplaysettingsexw
 ChangeDisplaySettingsExW = user32DLL.ChangeDisplaySettingsExW
@@ -434,3 +436,12 @@ QueryDisplayConfig.argtypes = [
     POINTER(DISPLAYCONFIG_MODE_INFO),
     POINTER(c_uint32),
 ]
+
+# https://learn.microsoft.com/en-us/windows/win32/api/icm/nf-icm-wcsgetcalibrationmanagementstate
+WcsGetCalibrationManagementState = mscmsDLL.WcsGetCalibrationManagementState
+WcsGetCalibrationManagementState.restype = BOOL
+WcsGetCalibrationManagementState.argtypes = [POINTER(BOOL)]
+
+InternalRefreshCalibration = mscmsDLL.InternalRefreshCalibration
+InternalRefreshCalibration.restype = LONG
+InternalRefreshCalibration.argtypes = [LONG, LONG]

@@ -14,7 +14,7 @@ from termcolor import colored, cprint
 from termcolor._types import Attribute, Color
 
 # Application metadata
-VERSION: str = "v3.0.1"
+VERSION: str = "v3.0.2"
 NAME: str = "ResolutionSwitcher"
 
 
@@ -117,6 +117,32 @@ def print_error(error: str):
     print_message("Error: " + error, "red", attrs=["bold"])
 
 
+def change_resolution(monitor_identifier: str, width: int, height: int, refresh: int):
+    display_mode: DisplayMode = DisplayMode(width, height, refresh)
+    print_message(
+        f"Attempting to change {monitor_identifier} settings to {str(display_mode)}"
+    )
+    set_display_mode_for_device(display_mode, monitor_identifier)
+    print_success("Display settings changed successfully")
+
+
+def change_hdr(monitor_identifier: str, hdr: str):
+    hdr_state = True if hdr.lower() == "true" else False
+
+    for monitor in all_monitors:
+        if monitor.adapter.identifier == monitor_identifier:
+            if not monitor.is_hdr_supported():
+                print_success(f"{monitor.adapter.identifier} does not support HDR")
+                print_success("Exiting...")
+                exit(-1)
+
+            print_message(
+                f'Attempting to {"enable" if hdr_state else "disable"} HDR on {monitor_identifier}'
+            )
+            set_hdr_state_for_monitor(hdr_state, monitor)
+            print_success(f"HDR {'enabled' if hdr_state else 'disabled'} successfully")
+
+
 if __name__ == "__main__":
     parser = argument_parser()
     args = parser.parse_args()
@@ -127,67 +153,20 @@ if __name__ == "__main__":
         print_error("No monitors found")
         exit(-1)
 
-    if args.width or args.height or args.refresh:
-        should_change_resolution: bool = (
-            args.width is not None
-            and args.height is not None
-            and args.refresh is not None
-        )
-        should_change_hdr: bool = args.hdr is not None
-
-        if not should_change_resolution:
-            print_error("Width, height and refresh rate are required")
-
-            if not should_change_hdr:
-                exit(-1)
-
-        if should_change_hdr:
-            if args.hdr.lower() not in ["true", "false"]:
-                print_error("Valid values for HDR are 'true' or 'false'")
-                exit(-1)
+    if args.hdr is not None:
+        if args.hdr.lower() not in ["true", "false"]:
+            print_error("Valid values for HDR are 'true' or 'false'")
+            exit(-1)
 
         try:
             identifier: str = args.monitor
 
             if identifier is None:
-                print_message("Monitor ID not specified")
-                print_message("Will attempt to identify primary monitor")
                 identifier = get_primary_monitor(all_monitors).identifier()
 
-            if should_change_resolution:
-                display_mode: DisplayMode = DisplayMode(
-                    args.width, args.height, args.refresh
-                )
+            change_hdr(identifier, args.hdr)
 
-                print_message(
-                    f"Attempting to change {identifier} settings to {str(display_mode)}"
-                )
-                set_display_mode_for_device(display_mode, identifier)
-                print_success("Display settings changed successfully")
-
-            if should_change_hdr:
-                for target_monitor in all_monitors:
-                    if target_monitor.adapter.identifier == identifier:
-                        if not target_monitor.is_hdr_supported():
-                            print_success(
-                                f"{target_monitor.adapter.identifier} does not support HDR"
-                            )
-                            print_success("Exiting...")
-                            exit(-1)
-
-                        hdr_state = True if args.hdr.lower() == "true" else False
-
-                        print_message(
-                            f'Attempting to {"enable" if hdr_state else "disable"} HDR on {identifier}'
-                        )
-                        set_hdr_state_for_monitor(hdr_state, target_monitor)
-                        print_success(
-                            f"HDR {'enabled' if hdr_state else 'disabled'} successfully"
-                        )
-
-        except DisplayAdapterException as e:
-            print_error(str(e))
-            exit(-1)
+            exit(0)
 
         except PrimaryMonitorException as e:
             print_error(str(e))
@@ -199,7 +178,36 @@ if __name__ == "__main__":
             )
             exit(-1)
 
-    elif args.monitor is not None:
+    if args.width or args.height or args.refresh:
+        should_change_resolution: bool = (
+            args.width is not None
+            and args.height is not None
+            and args.refresh is not None
+        )
+
+        if not should_change_resolution:
+            print_error("Width, height, and refresh rate are required for resolution change")
+            exit(-1)
+
+        try:
+            identifier: str = args.monitor
+
+            if identifier is None:
+                identifier = get_primary_monitor(all_monitors).identifier()
+
+            change_resolution(identifier, args.width, args.height, args.refresh)
+
+            exit(0)
+
+        except DisplayAdapterException as e:
+            print_error(str(e))
+            exit(-1)
+
+        except PrimaryMonitorException as e:
+            print_error(str(e))
+            exit(-1)
+
+    if args.monitor is not None:
         identifier: str = args.monitor
 
         for target_monitor in all_monitors:

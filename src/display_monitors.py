@@ -1,4 +1,6 @@
 from ctypes import byref, c_ulong, sizeof
+from ctypes.wintypes import BOOL
+from time import sleep
 from typing import Optional
 
 from custom_types import (
@@ -22,7 +24,9 @@ from windows_types import (
     DisplayConfigGetDeviceInfo,
     DisplayConfigSetDeviceInfo,
     GetDisplayConfigBufferSizes,
+    InternalRefreshCalibration,
     QueryDisplayConfig,
+    WcsGetCalibrationManagementState,
 )
 
 
@@ -144,6 +148,17 @@ def set_hdr_state_for_monitor(enabled: bool, monitor: DisplayMonitor):
             raise DisplayMonitorException(
                 f"Failed to change HDR state  with result {result}"
             )
+
+        sleep(3)
+
+        is_calibration_management_enabled = BOOL()
+
+        if not WcsGetCalibrationManagementState(
+            byref(is_calibration_management_enabled)
+        ):
+            raise DisplayMonitorException("Failed to get calibration management state")
+
+        InternalRefreshCalibration(0, 0)
 
     except OSError as e:
         raise DisplayMonitorException(f"Failed to change HDR state with error {e}")
