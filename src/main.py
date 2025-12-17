@@ -56,7 +56,7 @@ def argument_parser() -> ArgumentParser:
         prog=NAME,
         description="Command line tool to change Windows display settings",
         usage=f"{NAME} --version | --monitors | --monitor <ID> | --width <width> --height <height> --refresh "
-        f"<refresh> | hdr <true/false>",
+        f"<refresh> | --hdr <true/false>",
     )
 
     version_group = p.add_argument_group()
@@ -83,6 +83,11 @@ def argument_parser() -> ArgumentParser:
         "--refresh",
         type=int,
         help="The refresh rate of the new display mode (e.g. 144)",
+    )
+    mode_change_group.add_argument(
+        "--temp",
+        action="store_true",
+        help="Make resolution change temporary (do not persist to registry)",
     )
 
     hdr_group = p.add_argument_group()
@@ -117,12 +122,12 @@ def print_error(error: str):
     print_message("Error: " + error, "red", attrs=["bold"])
 
 
-def change_resolution(monitor_identifier: str, width: int, height: int, refresh: int):
+def change_resolution(monitor_identifier: str, width: int, height: int, refresh: int, temp: bool = False):
     display_mode: DisplayMode = DisplayMode(width, height, refresh)
     print_message(
         f"Attempting to change {monitor_identifier} settings to {str(display_mode)}"
     )
-    set_display_mode_for_device(display_mode, monitor_identifier)
+    set_display_mode_for_device(display_mode, monitor_identifier, temp)
     print_success("Display settings changed successfully")
 
 
@@ -195,7 +200,7 @@ if __name__ == "__main__":
             if identifier is None:
                 identifier = get_primary_monitor(all_monitors).identifier()
 
-            change_resolution(identifier, args.width, args.height, args.refresh)
+            change_resolution(identifier, args.width, args.height, args.refresh, args.temp)
 
             exit(0)
 

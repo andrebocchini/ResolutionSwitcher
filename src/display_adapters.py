@@ -2,6 +2,7 @@ from ctypes import byref, sizeof
 
 from custom_types import DisplayAdapter, DisplayAdapterException, DisplayMode
 from windows_types import (
+    CDS_UPDATEREGISTRY,
     DEVMODEW,
     DISP_CHANGE_BADDUALVIEW,
     DISP_CHANGE_BADFLAGS,
@@ -163,7 +164,7 @@ def get_active_display_mode_for_adapter(adapter: DISPLAY_DEVICEW) -> DisplayMode
         )
 
 
-def set_display_mode_for_device(display_mode: DisplayMode, device_identifier: str):
+def set_display_mode_for_device(display_mode: DisplayMode, device_identifier: str, temp: bool = False):
     if device_identifier is None:
         raise DisplayAdapterException("Device identifier cannot be empty")
 
@@ -178,9 +179,13 @@ def set_display_mode_for_device(display_mode: DisplayMode, device_identifier: st
     devmodew.dmDisplayFrequency = display_mode.refresh
     devmodew.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY
 
+    # Use CDS_UPDATEREGISTRY to persist changes to registry (default behavior)
+    # Use 0 for temporary changes that don't persist
+    flags: int = 0 if temp else CDS_UPDATEREGISTRY
+
     try:
         result: int = ChangeDisplaySettingsExW(
-            device_identifier, byref(devmodew), None, 0, None
+            device_identifier, byref(devmodew), None, flags, None
         )
 
         if result == DISP_CHANGE_SUCCESSFUL:

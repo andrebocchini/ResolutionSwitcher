@@ -44,6 +44,9 @@ DISPLAY_DEVICE_ATTACHED_TO_DESKTOP = 1
 DISPLAY_DEVICE_PRIMARY_DEVICE = 4
 
 # https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-changedisplaysettingsw
+# The graphics mode for the current screen will be changed dynamically and the graphics mode will be updated in the registry. 
+# The mode information is stored in the USER profile. 
+CDS_UPDATEREGISTRY = 0x00000001 
 DISP_CHANGE_SUCCESSFUL = 0
 DISP_CHANGE_RESTART = 1
 DISP_CHANGE_FAILED = -1
