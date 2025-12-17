@@ -4,8 +4,8 @@ A command line tool to change the display resolution and HDR state of computers 
 
 # Usage
 
-```0 errors, 0 warnings, 0 informations 
-usage: ResolutionSwitcher --version | --monitors | --monitor <ID> | --width <width> --height <height> --refresh <refresh> | hdr <true/false>
+```
+usage: ResolutionSwitcher --version | --monitors | --monitor <ID> | --width <width> --height <height> --refresh <refresh> | --hdr <true/false>
 
 Command line tool to change Windows display settings
 
@@ -19,6 +19,7 @@ options:
   --width WIDTH       The width of the new display mode (e.g. 1920)
   --height HEIGHT     The height of the new display mode (e.g. 1080)
   --refresh REFRESH   The refresh rate of the new display mode (e.g. 144)
+  --temp              Make resolution change temporary (do not persist to registry)
 
   --hdr <true|false>  Enable/Disable HDR on the monitor
 ```
@@ -99,9 +100,3 @@ cmd /C "C:\Program Files\ResolutionSwitcher\ResolutionSwitcher.exe" --hdr false
 The tool is written in [Python](https://www.python.org/) and uses the [ctypes](https://docs.python.org/3/library/ctypes.html) library to interact with the Windows API.
 
 For distribution, the Python script is compiled into an executable using [`pyinstaller`](https://www.pyinstaller.org/).
-
-# Known Issues
-
-Sometimes when changing HDR state, the screen resolution may reset to a previous
-resolution. As far as I can tell, this is a behavior of the Windows API, so if that's 
-happening to you, you might want to do an HDR change followed by a resolution change.
