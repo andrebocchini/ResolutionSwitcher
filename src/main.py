@@ -14,7 +14,7 @@ from termcolor import colored, cprint
 from termcolor._types import Attribute, Color
 
 # Application metadata
-VERSION: str = "v3.0.2"
+VERSION: str = "v3.0.3"
 NAME: str = "ResolutionSwitcher"
 
 
