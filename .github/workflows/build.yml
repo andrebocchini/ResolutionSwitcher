@@ -7,14 +7,29 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-    - name: Package Application
-      uses: JackMcKew/pyinstaller-action-windows@6736e82336143ca2eb15d13f9b1af90dfd945042
+
+    - name: Set up Python
+      uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55
       with:
-        path: src
+        python-version: '3.12'
+
+    - name: Create virtual environment and install dependencies
+      run: |
+        python -m venv venv
+        venv\Scripts\activate
+        python -m pip install --upgrade pip
+        pip install pyinstaller pywin32 pywin32-ctypes
+
+    - name: Build executable with PyInstaller
+      run: |
+        venv\Scripts\activate
+        cd src
+        pyinstaller build.spec
+
     - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
       with:
         name: ResolutionSwitcher
-        path: src/dist/windows
+        path: src/dist/ResolutionSwitcher.exe
