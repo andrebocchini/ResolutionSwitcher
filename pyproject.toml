@@ -30,7 +30,7 @@ build = [
 ]
 lint = [
     "ruff==0.3.7",
-    "pyright==1.1.360",
+    "pyright==1.1.407",
 ]
 
 [tool.setuptools]
@@ -48,3 +48,9 @@ ignore-init-module-imports = false
 
 [tool.pyright]
 include = ["src"]
+reportArgumentType = "warning"
+reportAssignmentType = "warning"
+reportAttributeAccessIssue = "warning"
+reportCallIssue = "warning"
+reportGeneralTypeIssues = "error"
+reportMissingImports = "error"

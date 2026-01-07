@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from argparse import ArgumentParser
 from sys import exit, stderr, stdout
-from typing import Iterable, Optional
+from typing import Iterable
 
 from custom_types import DisplayAdapterException, HdrException, PrimaryMonitorException
 from display_adapters import DisplayMode, set_display_mode_for_device
@@ -99,10 +101,10 @@ def argument_parser() -> ArgumentParser:
 
 def print_message(
     message: str,
-    color: Optional[Color] = None,
-    attrs: Optional[Iterable[Attribute]] = None,
-    end: Optional[str] = None,
-    is_error: Optional[bool] = False,
+    color: Color | None = None,
+    attrs: Iterable[Attribute] | None = None,  # type: ignore[reportGeneralTypeIssues]
+    end: str | None = None,
+    is_error: bool = False,
 ):
     file = stderr if is_error else stdout
     colored_message = colored(message, color, attrs=attrs)

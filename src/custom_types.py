@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from windows_types import (
     DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO,
@@ -21,15 +21,15 @@ class DisplayAdapter:
         self,
         identifier: str = "",
         display_name: str = "",
-        active_mode: Optional[DisplayMode] = None,
-        available_modes: Optional[list[DisplayMode]] = None,
+        active_mode: DisplayMode | None = None,
+        available_modes: list[DisplayMode] | None = None,
         is_attached: bool = False,
         is_primary: bool = False,
     ):
         self.identifier: str = identifier
         self.display_name: str = display_name
-        self.active_mode: Optional[DisplayMode] = active_mode
-        self.available_modes: Optional[list[DisplayMode]] = available_modes
+        self.active_mode: DisplayMode | None = active_mode
+        self.available_modes: list[DisplayMode] | None = available_modes
         self.is_attached: bool = is_attached
         self.is_primary: bool = is_primary
 
@@ -39,18 +39,18 @@ class DisplayMonitor:
         self,
         name: str = "",
         adapter: DisplayAdapter = DisplayAdapter(),
-        mode_info: Optional[DISPLAYCONFIG_MODE_INFO] = None,
-        color_info: Optional[DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO] = None,
+        mode_info: DISPLAYCONFIG_MODE_INFO | None = None,
+        color_info: DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO | None = None,
     ):
         self.name: str = name
         self.adapter: DisplayAdapter = adapter
-        self.mode_info: Optional[DISPLAYCONFIG_MODE_INFO] = mode_info
-        self.color_info: Optional[DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO] = color_info
+        self.mode_info: DISPLAYCONFIG_MODE_INFO | None = mode_info
+        self.color_info: DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO | None = color_info
 
     def identifier(self) -> str:
         return self.adapter.identifier
 
-    def active_mode(self) -> Optional[DisplayMode]:
+    def active_mode(self) -> DisplayMode | None:
         return self.adapter.active_mode
 
     def is_primary(self) -> bool:
@@ -63,13 +63,13 @@ class DisplayMonitor:
         if self.color_info is None:
             return False
 
-        return self.color_info.value & 0x1 == 0x1
+        return self.color_info.value & 0x1 == 0x1  # type: ignore[reportOperatorIssue]
 
     def is_hdr_enabled(self) -> bool:
         if self.color_info is None:
             return False
 
-        return self.color_info.value & 0x2 == 0x2
+        return self.color_info.value & 0x2 == 0x2  # type: ignore[reportOperatorIssue]
 
 
 class DisplayMonitorException(Exception):
