@@ -1,7 +1,6 @@
 from ctypes import byref, c_ulong, sizeof
 from ctypes.wintypes import BOOL
 from time import sleep  # type: ignore[reportMissingImports]
-from typing import Optional
 
 from custom_types import (
     DisplayMonitor,

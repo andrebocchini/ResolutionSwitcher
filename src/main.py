@@ -38,18 +38,18 @@ def print_monitor_info(monitor: DisplayMonitor):
     justification: int = 16
 
     print_message(f"[{monitor.name}]\n", "blue", attrs=["bold"])
-    print_message(f"ID:".ljust(justification) + f"{monitor.identifier()}")
-    print_message(f"Adapter:".ljust(justification) + f"{monitor.adapter.display_name}")
-    print_message(f"Resolution:".ljust(justification) + f"{monitor.active_mode()}")
-    print_message(f"Primary:".ljust(justification) + f"{monitor.is_primary()}")
-    print_message(f"Attached:".ljust(justification) + f"{monitor.is_attached()}")
+    print_message("ID:".ljust(justification) + f"{monitor.identifier()}")
+    print_message("Adapter:".ljust(justification) + f"{monitor.adapter.display_name}")
+    print_message("Resolution:".ljust(justification) + f"{monitor.active_mode()}")
+    print_message("Primary:".ljust(justification) + f"{monitor.is_primary()}")
+    print_message("Attached:".ljust(justification) + f"{monitor.is_attached()}")
 
     hdr_supported: bool = monitor.is_hdr_supported()
 
-    print_message(f"HDR Supported:".ljust(justification) + f"{hdr_supported}")
+    print_message("HDR Supported:".ljust(justification) + f"{hdr_supported}")
 
     if hdr_supported:
-        print_message(f"HDR Enabled:".ljust(justification) + f"{monitor.is_hdr_enabled()}")
+        print_message("HDR Enabled:".ljust(justification) + f"{monitor.is_hdr_enabled()}")
 
 
 def argument_parser() -> ArgumentParser:
