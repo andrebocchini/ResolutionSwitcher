@@ -24,9 +24,7 @@ jobs:
       run: |
         python -m venv venv
         venv\Scripts\python.exe -m pip install --upgrade pip
-        venv\Scripts\pip.exe install wheel build
-        python -m build --wheel --outdir wheelhouse
-        venv\Scripts\pip.exe install wheelhouse\*.whl[build,dev]
+        venv\Scripts\pip.exe install .[build,dev]
 
     - name: Build executable with PyInstaller
       run: |
