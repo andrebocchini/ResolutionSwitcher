@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=69.5.1", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ResolutionSwitcher"
+version = "3.0.3"
+description = "Command line tool to change Windows display settings"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Andre Bocchini"}
+]
+keywords = ["windows", "display", "resolution", "hdr", "cli"]
+
+dependencies = [
+    "colorama==0.4.6",
+    "pywin32==306",
+    "pywin32-ctypes==0.2.2",
+    "termcolor==2.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pyinstaller==6.6.0",
+    "pyinstaller-hooks-contrib==2024.4",
+]
+lint = [
+    "ruff==0.3.7",
+    "pyright==1.1.360",
+]
+
+[tool.setuptools]
+packages = []
+
+[tool.setuptools.package-data]
+"*" = ["LICENSE"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+ignore-init-module-imports = false
+
+[tool.pyright]
+include = ["src"]
