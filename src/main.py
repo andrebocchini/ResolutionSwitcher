@@ -4,6 +4,9 @@ from argparse import ArgumentParser
 from sys import exit, stderr, stdout
 from typing import Iterable
 
+from termcolor import colored, cprint
+from termcolor._types import Attribute, Color
+
 from custom_types import DisplayAdapterException, HdrException, PrimaryMonitorException
 from display_adapters import DisplayMode, set_display_mode_for_device
 from display_monitors import (
@@ -12,8 +15,6 @@ from display_monitors import (
     get_primary_monitor,
     set_hdr_state_for_monitor,
 )
-from termcolor import colored, cprint
-from termcolor._types import Attribute, Color
 
 # Application metadata
 VERSION: str = "v3.0.3"
@@ -140,7 +141,7 @@ def change_hdr(monitor_identifier: str, hdr: str):
                 exit(-1)
 
             print_message(
-                f'Attempting to {"enable" if hdr_state else "disable"} HDR on {monitor_identifier}'
+                f"Attempting to {'enable' if hdr_state else 'disable'} HDR on {monitor_identifier}"
             )
             set_hdr_state_for_monitor(hdr_state, monitor)
             print_success(f"HDR {'enabled' if hdr_state else 'disabled'} successfully")
