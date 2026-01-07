@@ -1,2 +1,14 @@
 [tools]
 uv = "latest"
+
+[tasks.build]
+description="Build the aplication executable"
+run="uv run --extra dev pyinstaller build.spec"
+
+[tasks.format]
+description="Format source files"
+run="uv run --extra lint ruff format"
+
+[tasks.lint]
+description="Run linting tools"
+run="uv run --extra lint ruff check --fix && uv run --extra lint pyright"
