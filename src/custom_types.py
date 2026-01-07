@@ -13,9 +13,7 @@ class DisplayMode:
         self.refresh: int = refresh
 
     def __str__(self):
-        return (
-            str(self.width) + "x" + str(self.height) + " @ " + str(self.refresh) + "Hz"
-        )
+        return str(self.width) + "x" + str(self.height) + " @ " + str(self.refresh) + "Hz"
 
 
 class DisplayAdapter:

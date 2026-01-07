@@ -46,9 +46,7 @@ def print_monitor_info(monitor: DisplayMonitor):
     print_message(f"HDR Supported:".ljust(justification) + f"{hdr_supported}")
 
     if hdr_supported:
-        print_message(
-            f"HDR Enabled:".ljust(justification) + f"{monitor.is_hdr_enabled()}"
-        )
+        print_message(f"HDR Enabled:".ljust(justification) + f"{monitor.is_hdr_enabled()}")
 
 
 def argument_parser() -> ArgumentParser:
@@ -63,9 +61,7 @@ def argument_parser() -> ArgumentParser:
     version_group.add_argument("--version", action="version", version=VERSION)
 
     monitor_group = p.add_mutually_exclusive_group()
-    monitor_group.add_argument(
-        "--monitors", action="store_true", help="List all active monitors"
-    )
+    monitor_group.add_argument("--monitors", action="store_true", help="List all active monitors")
     monitor_group.add_argument(
         "--monitor",
         type=str,
@@ -122,11 +118,11 @@ def print_error(error: str):
     print_message("Error: " + error, "red", attrs=["bold"])
 
 
-def change_resolution(monitor_identifier: str, width: int, height: int, refresh: int, temp: bool = False):
+def change_resolution(
+    monitor_identifier: str, width: int, height: int, refresh: int, temp: bool = False
+):
     display_mode: DisplayMode = DisplayMode(width, height, refresh)
-    print_message(
-        f"Attempting to change {monitor_identifier} settings to {str(display_mode)}"
-    )
+    print_message(f"Attempting to change {monitor_identifier} settings to {str(display_mode)}")
     set_display_mode_for_device(display_mode, monitor_identifier, temp)
     print_success("Display settings changed successfully")
 
@@ -178,16 +174,12 @@ if __name__ == "__main__":
             exit(-1)
 
         except HdrException as e:
-            print_error(
-                f"Error when trying to change HDR state. Failed with error {str(e)}"
-            )
+            print_error(f"Error when trying to change HDR state. Failed with error {str(e)}")
             exit(-1)
 
     if args.width or args.height or args.refresh:
         should_change_resolution: bool = (
-            args.width is not None
-            and args.height is not None
-            and args.refresh is not None
+            args.width is not None and args.height is not None and args.refresh is not None
         )
 
         if not should_change_resolution:

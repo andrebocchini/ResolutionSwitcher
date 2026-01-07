@@ -16,8 +16,6 @@ keywords = ["windows", "display", "resolution", "hdr", "cli"]
 
 dependencies = [
     "colorama==0.4.6",
-    "pywin32==306",
-    "pywin32-ctypes==0.2.2",
     "termcolor==2.4.0",
 ]
 
@@ -25,6 +23,10 @@ dependencies = [
 dev = [
     "pyinstaller==6.6.0",
     "pyinstaller-hooks-contrib==2024.4",
+]
+build = [
+    "pywin32==306",
+    "pywin32-ctypes==0.2.2",
 ]
 lint = [
     "ruff==0.3.7",

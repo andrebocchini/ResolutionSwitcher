@@ -28,10 +28,7 @@ from windows_types import (
 def is_attached_to_desktop(adapter: DISPLAY_DEVICEW) -> bool:
     state_flags: int = adapter.StateFlags
 
-    return (
-        state_flags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP
-        == DISPLAY_DEVICE_ATTACHED_TO_DESKTOP
-    )
+    return state_flags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP == DISPLAY_DEVICE_ATTACHED_TO_DESKTOP
 
 
 def is_primary_device(adapter: DISPLAY_DEVICEW) -> bool:
@@ -58,9 +55,7 @@ def get_all_display_adapters() -> list[DisplayAdapter]:
     finished_searching_for_devices: bool = False
 
     while not finished_searching_for_devices:
-        result: int = EnumDisplayDevicesW(
-            None, index_of_current_adapter, byref(display_device)
-        )
+        result: int = EnumDisplayDevicesW(None, index_of_current_adapter, byref(display_device))
 
         if result == 0:
             finished_searching_for_devices = True
@@ -69,11 +64,9 @@ def get_all_display_adapters() -> list[DisplayAdapter]:
                 display_adapter = DisplayAdapter()
                 display_adapter.identifier = str(display_device.DeviceName)
                 display_adapter.display_name = str(display_device.DeviceString)
-                display_adapter.active_mode = get_active_display_mode_for_adapter(
+                display_adapter.active_mode = get_active_display_mode_for_adapter(display_device)
+                display_adapter.available_modes = get_all_available_display_modes_for_adapter(
                     display_device
-                )
-                display_adapter.available_modes = (
-                    get_all_available_display_modes_for_adapter(display_device)
                 )
                 display_adapter.is_attached = is_attached_to_desktop(display_device)
                 display_adapter.is_primary = is_primary_device(display_device)
@@ -116,9 +109,7 @@ def get_all_available_display_modes_for_adapter(
 
     while not finished_getting_modes:
         try:
-            result: int = EnumDisplaySettingsW(
-                identifier, index_of_current_mode, byref(devmodew)
-            )
+            result: int = EnumDisplaySettingsW(identifier, index_of_current_mode, byref(devmodew))
 
             if result == 0:
                 finished_getting_modes = True
@@ -144,9 +135,7 @@ def get_active_display_mode_for_adapter(adapter: DISPLAY_DEVICEW) -> DisplayMode
         display_modew = DEVMODEW()
         display_modew.dmSize = sizeof(DEVMODEW)
 
-        result: int = EnumDisplaySettingsW(
-            identifier, ENUM_CURRENT_SETTINGS, byref(display_modew)
-        )
+        result: int = EnumDisplaySettingsW(identifier, ENUM_CURRENT_SETTINGS, byref(display_modew))
 
         if result == 0:
             raise DisplayAdapterException(
@@ -164,7 +153,9 @@ def get_active_display_mode_for_adapter(adapter: DISPLAY_DEVICEW) -> DisplayMode
         )
 
 
-def set_display_mode_for_device(display_mode: DisplayMode, device_identifier: str, temp: bool = False):
+def set_display_mode_for_device(
+    display_mode: DisplayMode, device_identifier: str, temp: bool = False
+):
     if device_identifier is None:
         raise DisplayAdapterException("Device identifier cannot be empty")
 
@@ -201,9 +192,7 @@ def set_display_mode_for_device(display_mode: DisplayMode, device_identifier: st
         elif result == DISP_CHANGE_BADPARAM:
             raise DisplayAdapterException("An invalid parameter was passed in")
         elif result == DISP_CHANGE_FAILED:
-            raise DisplayAdapterException(
-                "The display driver failed the specified graphics mode"
-            )
+            raise DisplayAdapterException("The display driver failed the specified graphics mode")
         elif result == DISP_CHANGE_NOTUPDATED:
             raise DisplayAdapterException("Unable to write settings to the registry")
         elif result == DISP_CHANGE_BADDUALVIEW:

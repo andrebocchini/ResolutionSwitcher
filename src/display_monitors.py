@@ -42,9 +42,7 @@ def get_adapter_name(mode_info: DISPLAYCONFIG_MODE_INFO) -> str:
         result: int = DisplayConfigGetDeviceInfo(byref(adapter_info.header))
 
         if result != ERROR_SUCCESS:
-            raise DisplayMonitorException(
-                f"Failed to get adapter name with result {result}"
-            )
+            raise DisplayMonitorException(f"Failed to get adapter name with result {result}")
 
         return str(adapter_info.adapterDevicePath)
     except OSError as e:
@@ -64,9 +62,7 @@ def get_monitor_source_name(path_source_info: DISPLAYCONFIG_PATH_SOURCE_INFO) ->
         result: int = DisplayConfigGetDeviceInfo(byref(device_info.header))
 
         if result != ERROR_SUCCESS:
-            raise DisplayMonitorException(
-                f"Failed to get monitor source with result {result}"
-            )
+            raise DisplayMonitorException(f"Failed to get monitor source with result {result}")
 
         return str(device_info.viewGdiDeviceName)
 
@@ -87,9 +83,7 @@ def get_monitor_name(mode_info: DISPLAYCONFIG_MODE_INFO) -> str:
         result: int = DisplayConfigGetDeviceInfo(byref(device_info.header))
 
         if result != ERROR_SUCCESS:
-            raise DisplayMonitorException(
-                f"Failed to get monitor name with result {result}"
-            )
+            raise DisplayMonitorException(f"Failed to get monitor name with result {result}")
 
         return str(device_info.monitorFriendlyDeviceName)
 
@@ -113,28 +107,24 @@ def get_monitor_color_info(
         result: int = DisplayConfigGetDeviceInfo(byref(color_info.header))
 
         if result != ERROR_SUCCESS:
-            raise DisplayMonitorException(
-                f"Failed to get monitor color info with result {result}"
-            )
+            raise DisplayMonitorException(f"Failed to get monitor color info with result {result}")
 
         return color_info
 
     except OSError as e:
-        raise DisplayMonitorException(
-            f"Failed to get monitor color info with error {e}"
-        )
+        raise DisplayMonitorException(f"Failed to get monitor color info with error {e}")
 
 
 def set_hdr_state_for_monitor(enabled: bool, monitor: DisplayMonitor):
     if monitor.mode_info is None:
-        raise DisplayMonitorException(
-            "Cannot change HDR state for monitor without mode info"
-        )
+        raise DisplayMonitorException("Cannot change HDR state for monitor without mode info")
 
     mode_info: DISPLAYCONFIG_MODE_INFO = monitor.mode_info
 
     color_state = DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE()
-    color_state.header.type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE
+    color_state.header.type = (
+        DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE
+    )
     color_state.header.size = sizeof(DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE)
     color_state.header.adapterId.highPart = mode_info.adapterId.highPart
     color_state.header.adapterId.lowPart = mode_info.adapterId.lowPart
@@ -145,17 +135,13 @@ def set_hdr_state_for_monitor(enabled: bool, monitor: DisplayMonitor):
         result: int = DisplayConfigSetDeviceInfo(byref(color_state.header))
 
         if result != ERROR_SUCCESS:
-            raise DisplayMonitorException(
-                f"Failed to change HDR state  with result {result}"
-            )
+            raise DisplayMonitorException(f"Failed to change HDR state  with result {result}")
 
         sleep(3)
 
         is_calibration_management_enabled = BOOL()
 
-        if not WcsGetCalibrationManagementState(
-            byref(is_calibration_management_enabled)
-        ):
+        if not WcsGetCalibrationManagementState(byref(is_calibration_management_enabled)):
             raise DisplayMonitorException("Failed to get calibration management state")
 
         InternalRefreshCalibration(0, 0)
