@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from windows_types import (
+from resolution_switcher.windows_types import (
     DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO,
     DISPLAYCONFIG_MODE_INFO,
 )

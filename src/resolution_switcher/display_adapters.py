@@ -1,7 +1,7 @@
 from ctypes import byref, sizeof
 
-from custom_types import DisplayAdapter, DisplayAdapterException, DisplayMode
-from windows_types import (
+from resolution_switcher.custom_types import DisplayAdapter, DisplayAdapterException, DisplayMode
+from resolution_switcher.windows_types import (
     CDS_UPDATEREGISTRY,
     DEVMODEW,
     DISP_CHANGE_BADDUALVIEW,

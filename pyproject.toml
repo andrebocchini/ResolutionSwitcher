@@ -35,7 +35,11 @@ lint = [
 ]
 
 [tool.setuptools]
-packages = []
+package-dir = {"" = "src"}
+packages = ["resolution_switcher"]
+
+[project.scripts]
+resolution-switcher = "resolution_switcher.cli:main"
 
 [tool.setuptools.package-data]
 "*" = ["LICENSE"]

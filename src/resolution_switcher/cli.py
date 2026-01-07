@@ -7,9 +7,13 @@ from typing import Iterable
 from termcolor import colored, cprint
 from termcolor._types import Attribute, Color
 
-from custom_types import DisplayAdapterException, HdrException, PrimaryMonitorException
-from display_adapters import DisplayMode, set_display_mode_for_device
-from display_monitors import (
+from resolution_switcher.custom_types import (
+    DisplayAdapterException,
+    HdrException,
+    PrimaryMonitorException,
+)
+from resolution_switcher.display_adapters import DisplayMode, set_display_mode_for_device
+from resolution_switcher.display_monitors import (
     DisplayMonitor,
     get_all_display_monitors,
     get_primary_monitor,
@@ -130,7 +134,7 @@ def change_resolution(
     print_success("Display settings changed successfully")
 
 
-def change_hdr(monitor_identifier: str, hdr: str):
+def change_hdr(monitor_identifier: str, hdr: str, all_monitors: list[DisplayMonitor]):
     hdr_state = True if hdr.lower() == "true" else False
 
     for monitor in all_monitors:
@@ -147,7 +151,8 @@ def change_hdr(monitor_identifier: str, hdr: str):
             print_success(f"HDR {'enabled' if hdr_state else 'disabled'} successfully")
 
 
-if __name__ == "__main__":
+def main():
+    """Main entry point for the CLI application."""
     parser = argument_parser()
     args = parser.parse_args()
 
@@ -168,7 +173,7 @@ if __name__ == "__main__":
             if identifier is None:
                 identifier = get_primary_monitor(all_monitors).identifier()
 
-            change_hdr(identifier, args.hdr)
+            change_hdr(identifier, args.hdr, all_monitors)
 
             exit(0)
 
@@ -228,3 +233,7 @@ if __name__ == "__main__":
         for target_monitor in all_monitors:
             print_monitor_info(target_monitor)
             print_message("")
+
+
+if __name__ == "__main__":
+    main()

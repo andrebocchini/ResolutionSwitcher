@@ -2,13 +2,13 @@ from ctypes import byref, c_ulong, sizeof
 from ctypes.wintypes import BOOL
 from time import sleep  # type: ignore[reportMissingImports]
 
-from custom_types import (
+from resolution_switcher.custom_types import (
     DisplayMonitor,
     DisplayMonitorException,
     PrimaryMonitorException,
 )
-from display_adapters import DisplayAdapter, get_all_display_adapters
-from windows_types import (
+from resolution_switcher.display_adapters import DisplayAdapter, get_all_display_adapters
+from resolution_switcher.windows_types import (
     DISPLAYCONFIG_ADAPTER_NAME,
     DISPLAYCONFIG_DEVICE_INFO_TYPE,
     DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO,

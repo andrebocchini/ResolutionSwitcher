@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['src/main.py'],
+    ['src/resolution_switcher/cli.py'],
     pathex=[],
     binaries=[],
     datas=[],

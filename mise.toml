@@ -1,6 +1,15 @@
 [tools]
 uv = "latest"
 
+[env]
+# Automatic virtualenv activation
+_.python.venv = { path = ".venv", create = true }
+
+[tasks.install]
+description = "Install dependencies"
+alias = "i"
+run = "uv sync --all-extras"
+
 [tasks.build]
 description="Build the aplication executable"
 run="uv run --extra dev pyinstaller build.spec"
@@ -12,3 +21,8 @@ run="uv run --extra lint ruff format"
 [tasks.lint]
 description="Run linting tools"
 run="uv run --extra lint ruff check --fix && uv run --extra lint pyright"
+
+[tasks.run]
+description="Run the application"
+alias="r"
+run="uv run python -m resolution_switcher"
