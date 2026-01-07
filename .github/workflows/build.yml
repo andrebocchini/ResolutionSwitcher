@@ -32,7 +32,7 @@ jobs:
       run: |
         wine python -m venv venv
         wine venv/Scripts/python.exe -m pip install --upgrade pip
-        wine venv/Scripts/pip.exe install pyinstaller pywin32 pywin32-ctypes
+        wine venv/Scripts/pip.exe install -e .[build,dev]
 
     - name: Build executable with PyInstaller
       run: |
