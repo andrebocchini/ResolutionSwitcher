@@ -7,27 +7,35 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: "3.12.4"
+      WINEARCH: win64
+      WINEPREFIX: /home/runner/.wine
     steps:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
 
-    - name: Set up Python
-      uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55
-      with:
-        python-version: '3.12'
+    - name: Install Wine
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+        sudo apt-get install -y wine64 wine32 xvfb
+
+    - name: Download and install Python for Windows
+      run: |
+        wget https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-amd64.exe -O python-installer.exe
+        xvfb-run wine python-installer.exe /quiet InstallAllUsers=0 PrependPath=1 Include_test=0
 
     - name: Create virtual environment and install dependencies
       run: |
-        python -m venv venv
-        venv\Scripts\activate
-        python -m pip install --upgrade pip
-        pip install pyinstaller pywin32 pywin32-ctypes
+        wine python -m venv venv
+        wine venv/Scripts/python.exe -m pip install --upgrade pip
+        wine venv/Scripts/pip.exe install pyinstaller pywin32 pywin32-ctypes
 
     - name: Build executable with PyInstaller
       run: |
-        venv\Scripts\activate
         cd src
-        pyinstaller build.spec
+        wine ../venv/Scripts/pyinstaller.exe build.spec
 
     - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
       with:
