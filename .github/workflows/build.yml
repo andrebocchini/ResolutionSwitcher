@@ -36,8 +36,7 @@ jobs:
 
     - name: Build executable with PyInstaller
       run: |
-        cd src
-        wine ../venv/Scripts/pyinstaller.exe build.spec
+        wine venv/Scripts/pyinstaller.exe build.spec
 
     - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
       with:
