@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=69.5.1", "wheel"]
+requires = ["setuptools>=69.5.1,<77.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,7 @@ version = "3.0.3"
 description = "Command line tool to change Windows display settings"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {file = "LICENSE"}
+license = {text = "MIT"}
 authors = [
     {name = "Andre Bocchini"}
 ]

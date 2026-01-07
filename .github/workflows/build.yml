@@ -32,7 +32,12 @@ jobs:
       run: |
         wine python -m venv venv
         wine venv/Scripts/python.exe -m pip install --upgrade pip
-        wine venv/Scripts/pip.exe install -e .[build,dev]
+        # Install build dependencies - pin setuptools to avoid CopyFile2 issue in Wine
+        wine venv/Scripts/pip.exe install "setuptools<77.0.0" wheel
+        # Build wheel first (avoids CopyFile2 issue that occurs with editable installs)
+        wine venv/Scripts/pip.exe wheel . -w wheelhouse --no-build-isolation
+        # Install from wheel (never use editable installs in Wine)
+        wine venv/Scripts/pip.exe install wheelhouse/*.whl[build,dev]
 
     - name: Build executable with PyInstaller
       run: |
